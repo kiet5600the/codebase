@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000245">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="01: ensure_git_branch" time="0.03575">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="02: git_pull" time="3.237508">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="03: Switch to android build_release lane" time="0.000249">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="04: Switch to android increment_android_version lane" time="0.000161">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="05: increment_version_code" time="0.001944">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="06: increment_version_name" time="0.001778">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="07: clean" time="19.326688">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="08: assembledevRelease" time="118.222122">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="09: Switch to android upload_to_appcenter lane" time="0.000304">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: appcenter_upload" time="57.480223">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

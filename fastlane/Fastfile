@@ -1,0 +1,84 @@
+default_platform(:ios)
+
+before_all do
+  ensure_git_branch(
+    branch: 'main'
+  )
+  git_pull
+  import('HelperFile')
+  ENV['FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD']= 'nssr-pmfs-ncxp-ouoq'
+  ANDROID_BUILD_PATH_DEFAULT = "../android/app/build/outputs/apk/#{ENV['APP_ENV'].downcase}/release/app-#{ENV['APP_ENV'].downcase}-release.apk"
+  ANDROID_BUILD_FILE_NAME = "#{ENV['APP_DISPLAY_NAME']}"
+  ANDROID_BUILD_PATH_UPLOAD = "android/app/build/outputs/apk/#{ENV['APP_ENV'].downcase}/release/#{ANDROID_BUILD_FILE_NAME}-#{ENV['VERSION_NAME']}.apk"
+  
+end
+
+lane :build_release do |options|
+  if options[:isAndroid]
+    increment_android_version(
+      version_code: ENV['ANDROID_VERSION_CODE'],
+      version_name: "#{ENV['ANDROID_VERSION_NAME']}"
+    )
+    gradle(task: 'clean', project_dir: 'android/', properties:{"defaultEnvFile" => ENV['ENVFILE']})
+    gradle(task: "assemble", build_type: "#{ENV['APP_ENV'].downcase}Release", project_dir: "android/")
+    File.rename(ANDROID_BUILD_PATH_DEFAULT,  "../#{ANDROID_BUILD_PATH_UPLOAD}")
+
+  else
+    increment_version_number(version_number: ENV['IOS_VERSION_NUMBER'], xcodeproj: "ios/#{ENV['IOS_PROJ_NAME']}.xcodeproj")
+    increment_build_number(build_number: ENV['IOS_BUILD_NUMBER'], xcodeproj: "ios/#{ENV['IOS_PROJ_NAME']}.xcodeproj")
+    build_app(
+      workspace: "ios/#{ENV['IOS_PROJ_NAME']}.xcworkspace",
+      scheme: "#{ENV['IOS_SCHEMA']}",
+      export_method: ENV['IOS_EXPORT_METHOD'],
+      clean: true,
+      silent: true,
+      include_bitcode: false,
+      output_name: "#{ENV['IOS_BUILD_FILENAME']}.ipa",
+      export_options: {
+        provisioningProfiles: { 
+          "#{ENV['BUNDLE_IDENTIFIER']}" => "#{ENV['IOS_PROVISIONING_PROFILES']}"
+        }
+      }
+    )
+  end
+end
+
+platform :ios do
+  desc "IOS build IPA then upload to TestFlight"
+  lane :testflight_build do |params|
+    build_release(isAndroid: false)
+    upload_to_testflight(
+      username: 'spixai2020@gmail.com',
+      app_identifier: 'com.codebase.quanna',
+      skip_submission: true,
+      skip_waiting_for_build_processing: true
+    )
+    # notify_testers(
+    #   text: "#{ENV['GOOGLE_CHAT_TAG_USER']} *#{ENV['APP_DISPLAY_NAME']}* has an ios release on TestFlight",
+    # )
+    clean_cache
+  end
+
+  desc "iOS clean file cache"
+  private_lane :clean_cache do
+    File.delete("../#{ENV['IOS_BUILD_FILENAME']}.ipa") if File.exist?("../#{ENV['IOS_BUILD_FILENAME']}.ipa")
+    File.delete("../#{ENV['IOS_BUILD_FILENAME']}.app.dSYM.zip") if File.exist?("../#{ENV['IOS_BUILD_FILENAME']}.app.dSYM.zip")
+  end
+end
+  
+
+platform :android do 
+  desc "Android build apk"
+  lane :appcenter_build do |params|
+    build_release(isAndroid: true)
+    upload_to_appcenter(
+      app_name: ENV['APP_CENTER_ANDROID_NAME'], 
+      file: "#{ANDROID_BUILD_PATH_UPLOAD}",
+    )
+    # notify_testers(
+    #   title: ENV['GOOGLE_CHAT_ANDROID_TITLE'], 
+    #   text: "#{ENV['GOOGLE_CHAT_TAG_USER']} *#{ENV['APP_DISPLAY_NAME']}* has an android release",
+    #   buttonUrl: "#{ENV['GOOGLE_CHAT_BTN_URL']}/#{ENV['APP_CENTER_OWNER_NAME']}/apps/#{ENV['APP_CENTER_ANDROID_NAME']}")
+  end
+end
+  

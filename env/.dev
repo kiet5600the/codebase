@@ -1,0 +1,9 @@
+APP_ENV=Dev
+API_URL=https://jsonplaceholder.typicode.com/
+APP_NAME=CodeBase
+VERSION_CODE=1
+VERSION_NAME=1.0.0
+BUNDLE_IDENTIFIER_IOS=com.codebase.quanna
+BUNDLE_IDENTIFIER_ANDROID=com.helloworld
+CODE_PUSH_KEY_ANDROID=1mRT25xy_xscY8CfW4D8Q5g6RUQeFa_kao-z9
+CODE_PUSH_KEY_IOS=dp5i5dtb-pZ9iAlXEkKl0uB7j05ggNkNRfnBX
